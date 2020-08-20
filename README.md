@@ -1,2 +1,2 @@
-# bpartis
-Bayseian Particle Instance Segmentation for Electron Microscopy Image Quantification
+# BPartIS
+**B**ayseian **Part**icle **I**nstance **S**egmentation for Electron Microscopy Image Quantification
