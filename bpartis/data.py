@@ -133,8 +133,9 @@ class EMPSDataset(Dataset):
 
 
 class SEMDataset(Dataset):
-    def __init__(self, path, rotate=True, device='cuda'):
+    def __init__(self, path, im_size=(256), rotate=True, device='cuda'):
         self.path = path
+        self.im_size = im_size
         self.rotate = rotate
         self.device = device
         self.image_fns = sorted(os.listdir(self.path))
@@ -149,10 +150,10 @@ class SEMDataset(Dataset):
     def __getitem__(self, idx):
         image = np.array(Image.open(self.path + self.image_fns[idx]))
         h, w = image.shape[:2]
-        # get random 512 x 512 patch
-        h_start = np.random.randint(h-512)
-        w_start = np.random.randint(w-512)
-        image = image[h_start:h_start+512, w_start:w_start+512, :]
+        # get random self.im_size[0] x self.im_size[1] patch
+        h_start = np.random.randint(h-self.im_size[0])
+        w_start = np.random.randint(w-self.im_size[1])
+        image = image[h_start:h_start+self.im_size[0], w_start:w_start+self.im_size[1], :]
         if self.rotate:
             image = self.random_rotation(image)
         image = image / 255.0
