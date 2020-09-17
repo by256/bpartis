@@ -1,6 +1,6 @@
 """
 ## Models (much of this code was adapted from https://github.com/davyneven/SpatialEmbeddings
-## credit to Davy Neven.
+## credit to Davy Neven).
 --------------------------------------------------
 ## Author: Batuhan Yildirim
 ## Email: by256@cam.ac.uk
