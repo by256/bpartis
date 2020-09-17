@@ -108,7 +108,7 @@ for epoch in range(namespace.epochs):
     if save_model:
         torch.save(model.state_dict(), '{}emps-model.pt'.format(namespace.save_dir))
 
-with open('{}logs/losses.pkl'.format(namespace.save_dir), 'wb') as f:
+with open('{}logs/emps-losses.pkl'.format(namespace.save_dir), 'wb') as f:
     pickle.dump(losses, f)
 
 fig, axes = plt.subplots(1, 2, figsize=(15, 5))
@@ -122,5 +122,5 @@ axes[1].plot(losses['val-iou'])
 axes[1].set_title('End IOU: {:.5f}'.format(losses['val-iou'][-1]))
 axes[1].set_xlabel('Epoch')
 axes[1].set_ylabel('Mean IOU')
-plt.savefig('{}logs/losses.png'.format(namespace.save_dir), bbox_inches='tight', pad_inches=0.1)
+plt.savefig('{}logs/emps-losses.png'.format(namespace.save_dir), bbox_inches='tight', pad_inches=0.1)
 plt.close()
