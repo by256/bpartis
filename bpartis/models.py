@@ -143,7 +143,7 @@ class Decoder (nn.Module):
         for layer in self.layers:
             output = layer(output)
 
-        output = F.interpolate(output, scale_factor=2, mode='bilinear')
+        output = F.interpolate(output, scale_factor=2, mode='bilinear', align_corners=False)
         output = self.output_conv(output)
 
         return output
