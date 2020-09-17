@@ -25,7 +25,11 @@ parser.add_argument('--load-ckpt', metavar='load_ckpt', type=str, default=None, 
 namespace = parser.parse_args()
 
 
-train_dataset, val_dataset = train_test_split_sem(SEMDataset, namespace.data_dir, namespace.im_size, device=namespace.device)
+train_dataset, val_dataset = train_test_split_sem(SEMDataset, 
+                                                  namespace.data_dir, 
+                                                  im_size=namespace.im_size, 
+                                                  device=namespace.device)
+
 print('Train: {}    Val: {}'.format(len(train_dataset), len(val_dataset)))
 train_loader = DataLoader(train_dataset, batch_size=namespace.batch_size) 
 val_loader = DataLoader(val_dataset, batch_size=namespace.batch_size)
