@@ -115,7 +115,7 @@ class UpsamplerBlock (nn.Module):
         self.bn = nn.BatchNorm2d(noutput, eps=1e-3)
 
     def forward(self, input):
-        output = F.interpolate(input, scale_factor=2, mode='bilinear')
+        output = F.interpolate(input, scale_factor=2, mode='bilinear', align_corners=False)
         output = self.conv(output)
         output = self.bn(output)
         return F.elu(output)
