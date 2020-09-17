@@ -11,8 +11,10 @@
 """
 
 import time
+import pickle
 import argparse
 import numpy as np
+import matplotlib.pyplot as plt
 import torch
 from torch.utils.data import DataLoader
 from torch.optim import Adam
@@ -105,3 +107,20 @@ for epoch in range(namespace.epochs):
 
     if save_model:
         torch.save(model.state_dict(), '{}emps-model.pt'.format(namespace.save_dir))
+
+with open('{}logs/losses.pkl'.format(namespace.save_dir), 'wb') as f:
+    pickle.dump(losses, f)
+
+fig, axes = plt.subplots(1, 2, figsize=(15, 5))
+
+axes[0].plot(losses['train'], label='train')
+axes[0].plot(losses['val'], label='val')
+axes[0].set_title('End Train: {:.5f}    End Val: {:.5f}'.format(losses['train'][-1], losses['val'][-1]))
+axes[0].set_xlabel('Epoch')
+axes[0].set_ylabel('Spatial Embedding Loss')
+axes[1].plot(losses['val-iou'])
+axes[1].set_title('End IOU: {:.5f}'.format(losses['val-iou'][-1]))
+axes[1].set_xlabel('Epoch')
+axes[1].set_ylabel('Mean IOU')
+plt.savefig('{}logs/losses.png'.format(namespace.save_dir), bbox_inches='tight', pad_inches=0.1)
+plt.close()
