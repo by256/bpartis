@@ -1,13 +1,16 @@
 import time
+import pickle
 import argparse
 import numpy as np
+import matplotlib.pyplot as plt
 import torch
 from torch.optim import Adam
 from torch.utils.data import DataLoader
 
 from data import SEMDataset
 from models import UnsupNet
-from utils.pretrain import ReconstructionLoss, train_test_split_sem
+from losses import ReconstructionLoss
+from utils.pretrain import train_test_split_sem
 
 
 parser = argparse.ArgumentParser(description='Pre-train model on the SEM dataset.')
@@ -22,7 +25,7 @@ parser.add_argument('--load-ckpt', metavar='load_ckpt', type=str, default=None, 
 namespace = parser.parse_args()
 
 
-train_dataset, val_dataset = train_test_split_sem(SEMDataset, namespace.data_dir, device=namespace.device)
+train_dataset, val_dataset = train_test_split_sem(SEMDataset, namespace.data_dir, namespace.im_size, device=namespace.device)
 print('Train: {}    Val: {}'.format(len(train_dataset), len(val_dataset)))
 train_loader = DataLoader(train_dataset, batch_size=namespace.batch_size) 
 val_loader = DataLoader(val_dataset, batch_size=namespace.batch_size)
@@ -67,3 +70,17 @@ for epoch in range(namespace.epochs):
     if save_model:
         torch.save(model.encoder.state_dict(), '{}pretrained-encoder.pt'.format(namespace.save_dir))
         torch.save(model.decoder.state_dict(), '{}pretrained-encoder.pt'.format(namespace.save_dir))
+
+with open('{}logs/pretrain-losses.pkl'.format(namespace.save_dir), 'wb') as f:
+    pickle.dump(losses, f)
+
+fig, ax = plt.subplots(1, 1, figsize=(5, 5))
+
+ax.plot(losses['train'], label='train')
+ax.plot(losses['val'], label='val')
+ax.set_title('End Train: {:.5f}    End Val: {:.5f}'.format(losses['train'][-1], losses['val'][-1]))
+ax.set_xlabel('Epoch')
+ax.set_ylabel('Reconstruction Loss')
+
+plt.savefig('{}logs/pretrain-losses.png'.format(namespace.save_dir), bbox_inches='tight', pad_inches=0.1)
+plt.close()
