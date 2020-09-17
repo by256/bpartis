@@ -33,3 +33,22 @@ def freeze_batchnorm_layers(model):
 
 def compute_decay_rate(start_lr, end_lr, epochs):
     return np.exp(np.log(end_lr/start_lr)/epochs)
+
+def train_test_split_emps(dataset, data_dir, im_size=(256, 256), device='cuda'):
+    train_dataset = dataset('{}/images/'.format(data_dir), '{}/segmaps/'.format(data_dir), im_size=im_size, device=device)
+    val_dataset = dataset('{}/images/'.format(data_dir), '{}/segmaps/'.format(data_dir), im_size=im_size, transform=False, device=device)
+
+    unique_dois = sorted(list(set([x.split('.png')[0].split(' (')[0].split('.gr')[0] for x in train_dataset.image_fns])))
+
+    np.random.seed(9)
+    indices = np.arange(len(unique_dois))
+    np.random.shuffle(indices)
+
+    train_indices = indices[:int(0.86*len(indices))]
+    val_indices = indices[int(0.86*len(indices)):]
+    train_dois = [unique_dois[i] for i in train_indices]
+    val_dois = [unique_dois[i] for i in val_indices]
+
+    train_dataset = split_train_val_dois(train_dataset, train_dois)
+    val_dataset = split_train_val_dois(val_dataset, val_dois)
+    return train_dataset, val_dataset
