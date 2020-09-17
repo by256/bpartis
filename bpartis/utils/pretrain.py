@@ -2,9 +2,9 @@ import numpy as np
 import torch.nn as nn
 
 
-def train_test_split_sem(dataset, data_dir, device='cuda'):
-    train_dataset = dataset(data_dir, device=device)
-    val_dataset = dataset(data_dir, device=device)
+def train_test_split_sem(dataset, data_dir, im_size=(256, 256), device='cuda'):
+    train_dataset = dataset(data_dir, im_size=im_size, device=device)
+    val_dataset = dataset(data_dir, im_size=im_size, device=device)
 
     np.random.seed(11)
     indices = np.arange(len(train_dataset))
