@@ -40,12 +40,12 @@ def train_test_split_emps(dataset, data_dir, im_size=(256, 256), device='cuda'):
 
     unique_dois = sorted(list(set([x.split('.png')[0].split(' (')[0].split('.gr')[0] for x in train_dataset.image_fns])))
 
-    np.random.seed(9)
+    np.random.seed(15)
     indices = np.arange(len(unique_dois))
     np.random.shuffle(indices)
 
-    train_indices = indices[:int(0.86*len(indices))]
-    val_indices = indices[int(0.86*len(indices)):]
+    train_indices = indices[:int(0.88*len(indices))]
+    val_indices = indices[int(0.88*len(indices)):]
     train_dois = [unique_dois[i] for i in train_indices]
     val_dois = [unique_dois[i] for i in val_indices]
 
