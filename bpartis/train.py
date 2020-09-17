@@ -35,10 +35,7 @@ parser.add_argument('--save-dir', metavar='save_dir', type=str, default='./saved
 parser.add_argument('--batch-size', metavar='batch_size', type=int, default=5, help='Batch size for training.')
 parser.add_argument('--lr', metavar='lr', type=float, default=3e-4, help='Learning rate.')
 parser.add_argument('--epochs', metavar='epochs', type=int, default=300, help='No. of epochs to train.')
-
-
 namespace = parser.parse_args()
-
 
 train_dataset, val_dataset = train_test_split_emps(EMPSDataset, 
                                                    namespace.data_dir, 
