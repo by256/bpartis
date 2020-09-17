@@ -16,8 +16,6 @@ import torch.nn as nn
 import torch.nn.functional as F
 
 
-
-
 class DownsamplerBlock (nn.Module):
     def __init__(self, ninput, noutput):
         super().__init__()
