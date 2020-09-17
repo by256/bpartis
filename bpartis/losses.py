@@ -130,3 +130,14 @@ def calculate_iou(pred, label):
     else:
         iou = intersection.item() / union.item()
         return iou
+
+class ReconstructionLoss(nn.Module):
+
+    def __init__(self, alpha=0.84):
+        super(ReconstructionLoss, self).__init__()
+        self.alpha = alpha
+        self.l1 = nn.L1Loss()
+        self.ms_ssim = MS_SSIM(data_range=1, size_average=True)
+
+    def forward(self, x, x_prime):
+        return (1-self.alpha)*self.l1(x, x_prime) + self.alpha*self.ms_ssim(x, x_prime) 
