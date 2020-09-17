@@ -27,7 +27,7 @@ class EMPSDataset(Dataset):
         self.device = device
 
         self.image_fns = os.listdir(image_dir)
-        self.image_fns = [x for x in self.image_fns if x.endswith('.png')][:10]
+        self.image_fns = [x for x in self.image_fns if x.endswith('.png')]
 
         np.random.seed(9)
         shuffle_idx = np.arange(len(self.image_fns)).astype(int)
