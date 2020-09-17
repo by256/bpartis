@@ -1,6 +1,5 @@
 import numpy as np
 import torch.nn as nn
-from pytorch_msssim import MS_SSIM
 
 
 def train_test_split_sem(dataset, data_dir, device='cuda'):
