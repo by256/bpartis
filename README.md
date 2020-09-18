@@ -21,7 +21,7 @@ python3 -m pip install -r requirements.txt
 
 If you are not interested in pre-training on the [SEM dataset](https://www.nature.com/articles/sdata2018172) then skip this section. Otherwise, you first need to download the SEM dataset and preprocess it as follows.
 
-3. Download the data files [here](https://b2share.eudat.eu/records/b9abc4a997f8452aa6de4f4b7335e582).
+3. Download the data files [here](https://b2share.eudat.eu/records/b9abc4a997f8452aa6de4f4b7335e582) and place the individual category folders into a single directory.
 
 4. Run `preprocess_sem_data.py`, passing as arguments the directory containing the SEM dataset category folders, and the destination you would like the preprocessed data to be saved to:
 
