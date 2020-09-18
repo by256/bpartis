@@ -79,5 +79,5 @@ for (image, instances, class_labels) in val_loader:
     axes[2].set_title('GT')
     axes[3].matshow(uncertainty.cpu())
     axes[3].set_title('Uncertainty')
-    plt.show()
+    plt.show();
 
