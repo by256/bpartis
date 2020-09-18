@@ -35,14 +35,14 @@ def monte_carlo_predict(model, image, n_samples=30, device='cuda'):
     model.eval()
     enable_eval_dropout(model)
 
-    # get monte carlo model outputs
+    # get monte carlo model samples
     mc_outputs = []
     for i in range(n_samples):
         output = model(image).detach()
         mc_outputs.append(output)
     mc_outputs = torch.cat(mc_outputs, dim=0)
 
-    # get semantic predictions of monte carlo outputs
+    # get semantic segmentations of monte carlo samples
     semantic_predictions = []
     for i in range(n_samples):
         prediction, mc_sem_map, _ = cluster.monte_carlo_cluster(mc_outputs[i])
