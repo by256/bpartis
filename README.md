@@ -19,7 +19,7 @@ python3 -m pip install -r requirements.txt
 
 #### Unsupervised Pre-Training (Optional)
 
-If you are not interested in pre-training on the [SEM dataset](https://www.nature.com/articles/sdata2018172.pdf) then skip this section. Otherwise, you first need to download the SEM dataset and preprocess it as follows.
+If you are not interested in pre-training on the [SEM dataset](https://www.nature.com/articles/sdata2018172) then skip this section. Otherwise, you first need to download the SEM dataset and preprocess it as follows.
 
 3. Download the data files [here](https://b2share.eudat.eu/records/b9abc4a997f8452aa6de4f4b7335e582).
 
