@@ -32,7 +32,7 @@ parser = argparse.ArgumentParser(description='Train model on EMPS dataset.')
 parser.add_argument('--data-dir', metavar='data_dir', type=str, help='Directory which contains the data.')
 parser.add_argument('--model-path', metavar='model_path', type=str, help='Path to saved model parameters.')
 parser.add_argument('--device', metavar='device', type=str, default='cuda', help='device to train on (cuda or cpu)')
-parser.add_argument('--im-size', metavar='im_size', type=tuple, default=(256, 256), help='Image size to load for training.')
+parser.add_argument('--im-size', metavar='im_size', type=tuple, default=(512, 512), help='Image size to load for training.')
 parser.add_argument('--batch-size', metavar='batch_size', type=int, default=1, help='Batch size for training.')
 namespace = parser.parse_args()
 

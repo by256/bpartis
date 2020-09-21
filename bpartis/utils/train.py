@@ -34,7 +34,7 @@ def freeze_batchnorm_layers(model):
 def compute_decay_rate(start_lr, end_lr, epochs):
     return np.exp(np.log(end_lr/start_lr)/epochs)
 
-def train_test_split_emps(dataset, data_dir, im_size=(256, 256), device='cuda'):
+def train_test_split_emps(dataset, data_dir, im_size=(512, 512), device='cuda'):
     train_dataset = dataset('{}/processed-images/'.format(data_dir), '{}/segmaps/'.format(data_dir), im_size=im_size, device=device)
     val_dataset = dataset('{}/processed-images/'.format(data_dir), '{}/segmaps/'.format(data_dir), im_size=im_size, transform=False, device=device)
 
