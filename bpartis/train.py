@@ -34,6 +34,7 @@ parser.add_argument('--finetune', metavar='finetune', type=bool, default=True, h
 parser.add_argument('--save-dir', metavar='save_dir', type=str, default='./saved_models/', help='directory to save and load weights from.')
 parser.add_argument('--batch-size', metavar='batch_size', type=int, default=5, help='Batch size for training.')
 parser.add_argument('--lr', metavar='lr', type=float, default=3e-4, help='Learning rate.')
+parser.add_argument('--end-lr', metavar='end_lr', type=float, default=None, help='Learning rate to decay to.')
 parser.add_argument('--epochs', metavar='epochs', type=int, default=300, help='No. of epochs to train.')
 namespace = parser.parse_args()
 
@@ -60,8 +61,9 @@ loss_w = {
     }
 criterion = SpatialEmbLoss(to_center=False, n_sigma=2, foreground_weight=10).to(namespace.device)
 optimizer = Adam(model.parameters(), lr=namespace.lr)
-decay = compute_decay_rate(start_lr=namespace.lr, end_lr=3e-4, epochs=int(namespace.epochs*0.75))
-lr_scheduler = ExponentialLR(optimizer=optimizer, gamma=decay, last_epoch=int(namespace.epochs*0.75))
+if namespace.end_lr is not None:
+    decay = compute_decay_rate(start_lr=namespace.lr, end_lr=namespace.end_lr, epochs=int(namespace.epochs*0.75))
+    lr_scheduler = ExponentialLR(optimizer=optimizer, gamma=decay, last_epoch=int(namespace.epochs*0.75))
 
 losses = {'train': [], 'val': [], 'val-iou': []}
 
@@ -98,7 +100,8 @@ for epoch in range(namespace.epochs):
         epoch_val_losses.append(loss.item())
         epoch_val_ious.append(ious)
     
-    lr_scheduler.step()
+    if namespace.end_lr is not None:
+        lr_scheduler.step()
 
     save_model = (np.mean(epoch_val_losses) < np.min(losses['val']) if epoch > 0 else False)
     losses['val'].append(np.mean(epoch_val_losses))
