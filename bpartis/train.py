@@ -63,7 +63,7 @@ criterion = SpatialEmbLoss(to_center=False, n_sigma=2, foreground_weight=10).to(
 optimizer = Adam(model.parameters(), lr=namespace.lr)
 if namespace.end_lr is not None:
     decay = compute_decay_rate(start_lr=namespace.lr, end_lr=namespace.end_lr, epochs=int(namespace.epochs*0.75))
-    lr_scheduler = ExponentialLR(optimizer=optimizer, gamma=decay, last_epoch=int(namespace.epochs*0.75))
+    lr_scheduler = ExponentialLR(optimizer=optimizer, gamma=decay)
 
 losses = {'train': [], 'val': [], 'val-iou': []}
 
@@ -100,7 +100,7 @@ for epoch in range(namespace.epochs):
         epoch_val_losses.append(loss.item())
         epoch_val_ious.append(ious)
     
-    if namespace.end_lr is not None:
+    if (namespace.end_lr is not None) & (epoch+1 <= int(namespace.epochs*0.75)):
         lr_scheduler.step()
 
     save_model = (np.mean(epoch_val_losses) < np.min(losses['val']) if epoch > 0 else False)
