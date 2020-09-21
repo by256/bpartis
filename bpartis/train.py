@@ -67,6 +67,8 @@ if namespace.end_lr is not None:
 
 losses = {'train': [], 'val': [], 'val-iou': []}
 
+print('FINETUNE: ', namespace.finetune)
+
 for epoch in range(namespace.epochs):
 
     epoch_train_losses = []
