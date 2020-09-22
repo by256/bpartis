@@ -24,7 +24,6 @@ from torch.optim.lr_scheduler import ExponentialLR
 from torchvision.models.detection.mask_rcnn import MaskRCNN
 from torchvision.models.detection.backbone_utils import resnet_fpn_backbone
 
-# sys.path.append('..')
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 from data import EMPSMaskRCNN
 from utils.eval import metrics
@@ -34,7 +33,7 @@ from utils.train import train_test_split_emps, compute_decay_rate
 parser = argparse.ArgumentParser(description='Train Mask R-CNN model on EMPS dataset.')
 parser.add_argument('--data-dir', metavar='data_dir', type=str, help='Directory which contains the data.')
 parser.add_argument('--device', metavar='device', type=str, default='cuda', help='device to train on (cuda or cpu)')
-parser.add_argument('--im-size', metavar='im_size', type=tuple, default=(256, 256), help='Image size to load for training.')
+parser.add_argument('--im-size', metavar='im_size', type=tuple, default=(512, 512), help='Image size to load for training.')
 parser.add_argument('--save-dir', metavar='save_dir', type=str, default='./saved_models/', help='directory to save and load weights from.')
 parser.add_argument('--batch-size', metavar='batch_size', type=int, default=1, help='Batch size for training.')
 parser.add_argument('--lr', metavar='lr', type=float, default=3e-4, help='Learning rate.')
