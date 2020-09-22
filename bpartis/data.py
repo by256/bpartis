@@ -216,7 +216,7 @@ class EMPSMaskRCNN(Dataset):
         # convert everything into a torch.Tensor
         boxes = torch.Tensor(boxes).float()
         # there is only one class
-        labels = torch.ones((num_objs,)).int()
+        labels = torch.ones((num_objs,), dtype=torch.int64)
         masks = torch.Tensor(masks).byte()
 
         image_id = torch.tensor([idx])
