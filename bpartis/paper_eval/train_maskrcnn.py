@@ -97,6 +97,8 @@ for epoch in range(namespace.epochs):
             pred_masks = output['masks'].squeeze()
             gt_masks = targets[i]['masks']
             iou, ap = metrics(pred_masks, gt_masks)
+            epoch_val_ious.append(iou)
+            epoch_val_aps.append(ap)
     
     if (namespace.end_lr is not None) & (epoch+1 <= int(namespace.epochs*0.75)):
         lr_scheduler.step()
