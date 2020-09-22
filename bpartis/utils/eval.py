@@ -19,9 +19,13 @@ def compute_iou(pred_mask, gt_mask):
     Computes IoU between predicted instance mask and 
     ground-truth instance mask
     """
-    intersection = pred_mask & gt_mask
-    union = pred_mask | gt_mask
-    return float(intersection.sum()) / float(union.sum())
+    # intersection = pred_mask & gt_mask
+    # union = pred_mask | gt_mask
+    pred_mask = pred_mask.byte()
+    gt_mask = gt_mask.byte()
+    intersection = torch.bitwise_and(pred_mask, gt_mask).sum().float()
+    union = torch.bitwise_or(pred_mask, gt_mask).sum().float()
+    return intersection / union
 
 def compute_matches(pred, gt, t=0.5):
     matches = []
@@ -37,6 +41,8 @@ def compute_matches(pred, gt, t=0.5):
     return matches, np.mean(ious)
 
 def metrics(pred, gt, t=0.5):
+
+    pred = pred.detach()
 
     if len(gt.shape) == 2:
         # turn instance maps into N binary instance maps each
