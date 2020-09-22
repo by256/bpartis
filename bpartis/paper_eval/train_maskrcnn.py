@@ -26,7 +26,7 @@ from torchvision.models.detection.backbone_utils import resnet_fpn_backbone
 
 # sys.path.append('..')
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
-from ..data import EMPSMaskRCNN
+from data import EMPSMaskRCNN
 from utils.eval import metrics
 from utils.train import train_test_split_emps, compute_decay_rate
 
