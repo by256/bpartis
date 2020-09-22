@@ -25,7 +25,6 @@ def compute_iou(pred_mask, gt_mask):
     gt_mask = gt_mask.byte()
     intersection = torch.bitwise_and(pred_mask, gt_mask).sum().float()
     union = torch.bitwise_or(pred_mask, gt_mask).sum().float()
-    print(intersection, union)
     return intersection / union
 
 def compute_matches(pred, gt, t=0.5):
@@ -58,11 +57,8 @@ def metrics(pred, gt, t=0.5, eps=1e-12):
     tp = len(matches)
     fp = np.maximum(len(pred) - tp, 0)
     fn = np.maximum(len(gt) - tp, 0)
-    print('tp', tp)
 
-    # if tp > 0:
     precision = tp / (tp + fp + eps)
-    # else: precision = 0.0
 
     return mean_iou, precision
 
