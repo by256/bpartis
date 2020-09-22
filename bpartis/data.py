@@ -171,3 +171,64 @@ class SEMDataset(Dataset):
         elif (random_number >= 0.5) & (random_number < 0.75):
             image = image.rotate(270)
         return np.array(image)
+
+
+class EMPSMaskRCNN(Dataset):
+    
+    def __init__(self, image_dir, mask_dir, im_size=(256, 256), device='cuda'):
+        self.image_dir = image_dir
+        self.mask_dir = mask_dir
+        self.im_size = im_size
+        self.device = device
+
+        self.image_fns = os.listdir(image_dir)
+        self.image_fns = [x for x in self.image_fns if x.endswith('.png')]
+
+        np.random.seed(9)
+        shuffle_idx = np.arange(len(self.image_fns)).astype(int)
+        np.random.shuffle(shuffle_idx)
+
+        self.image_fns = list(np.array(self.image_fns)[shuffle_idx])
+
+    def __len__(self):
+        return len(self.image_fns)
+
+    def __getitem__(self, idx):
+        image = np.array(Image.open(self.image_dir + self.image_fns[idx]).resize(self.im_size, resample=Image.BICUBIC))
+        mask = np.array(Image.open(self.mask_dir + self.image_fns[idx]).resize(self.im_size, resample=Image.NEAREST))
+        obj_ids = np.unique(mask)[1:]
+        
+        # split the color-encoded mask into a set of binary masks
+        masks = mask == obj_ids[:, None, None]
+
+        # get bounding box coordinates for each mask
+        num_objs = len(obj_ids)
+        boxes = []
+        for i in range(num_objs):
+            pos = np.where(masks[i])
+            xmin = np.min(pos[1])
+            xmax = np.max(pos[1])
+            ymin = np.min(pos[0])
+            ymax = np.max(pos[0])
+            boxes.append([xmin, ymin, xmax, ymax])
+
+        # convert everything into a torch.Tensor
+        boxes = torch.Tensor(boxes).float()
+        # there is only one class
+        labels = torch.ones((num_objs,)).int()
+        masks = torch.Tensor(masks).byte()
+
+        image_id = torch.tensor([idx])
+        area = (boxes[:, 3] - boxes[:, 1]) * (boxes[:, 2] - boxes[:, 0])
+        # suppose all instances are not crowd
+        iscrowd = torch.zeros((num_objs,), dtype=torch.int64)
+
+        target = {}
+        target["boxes"] = boxes
+        target["labels"] = labels
+        target["masks"] = masks
+        target["image_id"] = image_id
+        target["area"] = area
+        target["iscrowd"] = iscrowd
+
+        return image, target
