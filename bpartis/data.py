@@ -195,6 +195,7 @@ class EMPSMaskRCNN(Dataset):
 
     def __getitem__(self, idx):
         image = np.array(Image.open(self.image_dir + self.image_fns[idx]).resize(self.im_size, resample=Image.BICUBIC))
+        image = torch.Tensor(image).permute(2, 0, 1)
         mask = np.array(Image.open(self.mask_dir + self.image_fns[idx]).resize(self.im_size, resample=Image.NEAREST))
         obj_ids = np.unique(mask)[1:]
         
