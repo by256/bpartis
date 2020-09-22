@@ -17,8 +17,6 @@ import pickle
 import argparse
 import numpy as np
 import matplotlib.pyplot as plt
-py_dll_path = os.path.join(sys.exec_prefix, 'Library', 'bin')
-os.environ['PATH'] += py_dll_path
 import torch
 from torch.utils.data import DataLoader
 from torch.optim import Adam
@@ -26,8 +24,9 @@ from torch.optim.lr_scheduler import ExponentialLR
 from torchvision.models.detection.mask_rcnn import MaskRCNN
 from torchvision.models.detection.backbone_utils import resnet_fpn_backbone
 
-sys.path.append('..')
-from data import EMPSMaskRCNN
+# sys.path.append('..')
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+from ..data import EMPSMaskRCNN
 from utils.eval import metrics
 from utils.train import train_test_split_emps, compute_decay_rate
 
