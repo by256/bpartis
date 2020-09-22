@@ -38,27 +38,15 @@ def compute_matches(pred, gt, t=0.5):
 
 def metrics(pred, gt, t=0.5):
 
-    print('pred', pred.shape, 'gt', gt.shape)
-
-    fig, axes = plt.subplots(1, 2)
-    axes[0].matshow(pred)
-    axes[1].matshow(gt)
-    plt.show()
-
     if len(gt.shape) == 2:
         # turn instance maps into N binary instance maps each
         pred = torch.stack([(pred == i).byte() for i in torch.unique(pred) if i != 0], dim=0)
         gt = torch.stack([(gt == i).byte() for i in torch.unique(gt) if i != 0], dim=0)
-    print('pred', pred.shape, 'gt', gt.shape)
 
     matches, mean_iou = compute_matches(pred, gt)
-    print(matches)
-    print('mean_iou', mean_iou)
     tp = len(matches)
     fp = np.maximum(len(pred) - tp, 0)
     fn = np.maximum(len(gt) - tp, 0)
-
-    print('tp', tp, 'fp', fp, 'fn', fn)
 
     precision = tp / (tp + fp)
 
@@ -75,7 +63,6 @@ def average_precision_range(pred, gt):
     thresholds = np.linspace(0.5, 0.95, 10)
     for t in thresholds:
         matches, _ = compute_matches(pred, gt, t=t)
-        print(len(matches))
         tp = len(matches)
         fp = np.maximum(len(pred) - tp, 0.0)
         fn = np.maximum(len(gt) - tp, 0.0)
