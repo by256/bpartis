@@ -25,6 +25,7 @@ def compute_iou(pred_mask, gt_mask):
     gt_mask = gt_mask.byte()
     intersection = torch.bitwise_and(pred_mask, gt_mask).sum().float()
     union = torch.bitwise_or(pred_mask, gt_mask).sum().float()
+    print(intersection, union)
     return intersection / union
 
 def compute_matches(pred, gt, t=0.5):
@@ -38,9 +39,13 @@ def compute_matches(pred, gt, t=0.5):
                 matches.append(match)
                 ious.append(iou)
                 break
-    return matches, np.mean(ious)
+    if len(ious) == 0:
+        mean_iou = 0.0
+    else:
+        mean_iou = np.mean(ious)
+    return matches, mean_iou
 
-def metrics(pred, gt, t=0.5):
+def metrics(pred, gt, t=0.5, eps=1e-12):
 
     pred = pred.detach()
 
@@ -53,12 +58,15 @@ def metrics(pred, gt, t=0.5):
     tp = len(matches)
     fp = np.maximum(len(pred) - tp, 0)
     fn = np.maximum(len(gt) - tp, 0)
+    print('tp', tp)
 
-    precision = tp / (tp + fp)
+    # if tp > 0:
+    precision = tp / (tp + fp + eps)
+    # else: precision = 0.0
 
     return mean_iou, precision
 
-def average_precision_range(pred, gt):
+def average_precision_range(pred, gt, eps=1e-12):
 
     if len(gt.shape) == 2:
         # turn instance maps into N binary instance maps each
@@ -72,6 +80,38 @@ def average_precision_range(pred, gt):
         tp = len(matches)
         fp = np.maximum(len(pred) - tp, 0.0)
         fn = np.maximum(len(gt) - tp, 0.0)
-        precision = tp / (tp + fp)
+        precision = tp / (tp + fp + eps)
         aps.append(precision)
     return np.mean(aps)
+
+
+
+# import os
+# import sys
+# sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
+# from data import EMPSMaskRCNN
+# from utils.train import train_test_split_emps
+
+# device='cpu'
+# train_dataset, val_dataset = train_test_split_emps(EMPSMaskRCNN, 
+#                                                    '/home/by256/Documents/Projects/particle-seg-dataset/elsevier/', 
+#                                                    im_size=(512, 512), 
+#                                                    device=device)
+
+# # model = BranchedERFNet(num_classes=[4, 1]).to(device)
+# # model = load_pretrained(model, path='/home/by256/Documents/Projects/bpartis/bpartis/saved_models/emps-model.pt', device=device)
+
+# # image, instance, _ = val_dataset[0]
+
+# image, targets = val_dataset[0]
+# masks = targets['masks']
+
+# image, targets = val_dataset[4]
+# masks_2 = targets['masks']
+
+# # print(targets)
+# # print(masks.shape)
+
+# iou, ap = metrics(masks, masks_2)
+
+# print(iou, ap)
