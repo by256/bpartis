@@ -44,8 +44,10 @@ def train_test_split_emps(dataset, data_dir, im_size=(512, 512), device='cuda'):
     indices = np.arange(len(unique_dois))
     np.random.shuffle(indices)
 
-    train_indices = indices[:int(0.88*len(indices))]
-    val_indices = indices[int(0.88*len(indices)):]
+    # train_indices = indices[:int(0.88*len(indices))]
+    # val_indices = indices[int(0.88*len(indices)):]
+    train_indices = indices[:int(0.77*len(indices))]
+    val_indices = indices[int(0.77*len(indices)):]
     train_dois = [unique_dois[i] for i in train_indices]
     val_dois = [unique_dois[i] for i in val_indices]
 
