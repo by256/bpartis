@@ -95,8 +95,8 @@ for epoch in range(namespace.epochs):
         targets = [{k: v.to(namespace.device) for k, v in t.items()} for t in targets]
         outputs = model(images)
         for i, output in enumerate(outputs):
-            pred_masks = output['masks']#.squeeze()
-            gt_masks = targets[i]['masks']
+            pred_masks = output['masks'].detach()
+            gt_masks = targets[i]['masks'].detach()
             # print('pred_masks', pred_masks.shape, 'gt_masks', gt_masks.shape)
             iou, ap, ap_50, ap_75 = metrics(pred_masks, gt_masks)
             epoch_val_ious.append(iou)
