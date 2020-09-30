@@ -175,7 +175,7 @@ class SEMDataset(Dataset):
 
 class EMPSMaskRCNN(Dataset):
     
-    def __init__(self, image_dir, mask_dir, im_size=(256, 256), device='cuda', transform=True):
+    def __init__(self, image_dir, mask_dir, im_size=(256, 256), device='cuda', transform=True by ):
         self.image_dir = image_dir
         self.mask_dir = mask_dir
         self.im_size = im_size
@@ -221,7 +221,8 @@ class EMPSMaskRCNN(Dataset):
             # random crop
             image, instances = self.random_crop(image, instances)
         
-        image = torch.Tensor(image).permute(2, 0, 1) #/ 255.0
+        image = torch.Tensor(image).permute(2, 0, 1) 
+        image = image / 255.0
         image = (image - self.mean) / self.std
         
         # split the color-encoded mask into a set of binary masks
