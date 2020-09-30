@@ -91,7 +91,7 @@ for epoch in range(namespace.epochs):
     epoch_val_ap_50s = []
     model.eval()
 
-    if epoch > 4:
+    if epoch > 10:
 
         for (images, targets) in val_loader:
             images = list(image.to(namespace.device) for image in images)
