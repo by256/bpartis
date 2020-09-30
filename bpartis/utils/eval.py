@@ -20,9 +20,9 @@ def compute_iou(pred_mask, gt_mask):
     ground-truth instance mask
     """
 
-    pred_mask = pred_mask.byte()
-    gt_mask = gt_mask.byte()
-    print('pred_masks', pred_mask.shape, 'gt_masks', gt_mask.shape)
+    pred_mask = pred_mask.byte().squeeze()
+    gt_mask = gt_mask.byte().squeeze()
+    # print('pred_masks', pred_mask.shape, 'gt_masks', gt_mask.shape)
     intersection = torch.bitwise_and(pred_mask, gt_mask).sum().float()
     union = torch.bitwise_or(pred_mask, gt_mask).sum().float()
     return intersection / union
