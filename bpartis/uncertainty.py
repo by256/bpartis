@@ -46,7 +46,8 @@ def monte_carlo_predict(model, image, n_samples=30, device='cuda'):
     semantic_predictions = []
     for i in range(n_samples):
         prediction, mc_sem_map, _ = cluster.monte_carlo_cluster(mc_outputs[i])
-        semantic_predictions.append(mc_sem_map)
+        semantic_predictions.append((prediction > 0.0).float())
+        # semantic_predictions.append(mc_sem_map)
 
     semantic_predictions = torch.stack(semantic_predictions, dim=0)
     total = predictive_entropy(semantic_predictions)
@@ -58,4 +59,19 @@ def monte_carlo_predict(model, image, n_samples=30, device='cuda'):
     mean_mc_output = torch.mean(mc_outputs, dim=0)
     mc_instance_prediction, _ = cluster.cluster(mean_mc_output)
 
-    return mc_instance_prediction, epistemic 
+    return mc_instance_prediction, epistemic
+
+def uncertainty_filtering(prediction, uncertainty, t=0.15):
+
+    filtered_pred = torch.zeros_like(prediction)
+
+    for inst_id in torch.unique(prediction):
+        if inst_id == 0:
+            continue
+        inst_mask = prediction == inst_id
+        inst_uncertainty = torch.mean(uncertainty[inst_mask])
+        # print(f'idx {inst_id} uncertainty', inst_uncertainty)
+        if inst_uncertainty < t:
+            filtered_pred[inst_mask] = torch.max(filtered_pred) + 1
+
+    return filtered_pred
