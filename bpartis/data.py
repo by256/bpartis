@@ -175,7 +175,7 @@ class SEMDataset(Dataset):
 
 class EMPSMaskRCNN(Dataset):
     
-    def __init__(self, image_dir, mask_dir, im_size=(256, 256), device='cuda', transform=False):
+    def __init__(self, image_dir, mask_dir, im_size=(256, 256), device='cuda', transform=True):
         self.image_dir = image_dir
         self.mask_dir = mask_dir
         self.im_size = im_size
