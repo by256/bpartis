@@ -25,6 +25,8 @@ from torch.optim.lr_scheduler import ExponentialLR
 from torchvision.models.detection.mask_rcnn import MaskRCNN
 from torchvision.models.detection.backbone_utils import resnet_fpn_backbone
 
+from PIL import Image
+
 sys.path.append('../../')
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), os.path.pardir)))
 
