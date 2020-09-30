@@ -43,6 +43,7 @@ def compute_tp_fp_fn(pred, gt, t=0.5):
             match_table.append(row)
     
     match_table = np.array(match_table)
+    print(match_table, '\n')
 
     # get tp and fn
     for gt_idx in range(len(gt)):
