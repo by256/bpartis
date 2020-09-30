@@ -180,6 +180,7 @@ class EMPSMaskRCNN(Dataset):
         self.mask_dir = mask_dir
         self.im_size = im_size
         self.device = device
+        self.transform = transform
 
         self.image_fns = os.listdir(image_dir)
         self.image_fns = [x for x in self.image_fns if x.endswith('.png')]
@@ -189,15 +190,39 @@ class EMPSMaskRCNN(Dataset):
         np.random.shuffle(shuffle_idx)
 
         self.image_fns = list(np.array(self.image_fns)[shuffle_idx])
+        self.mean = torch.Tensor([0.485, 0.456, 0.406]).view(-1, 1, 1)
+        self.std = torch.Tensor([0.229, 0.224, 0.225]).view(-1, 1, 1)
+
+        self.colour_jitter = transforms.ColorJitter(brightness=0.3, contrast=0.3, saturation=0.3, hue=0.3)
+        self.crop = transforms.RandomCrop((self.im_size[0]//2, self.im_size[1]//2))
+        self.hor_flip = transforms.RandomHorizontalFlip(p=1.0)
+        self.vert_flip = transforms.RandomVerticalFlip(p=1.0)
 
     def __len__(self):
         return len(self.image_fns)
 
     def __getitem__(self, idx):
         image = np.array(Image.open(self.image_dir + self.image_fns[idx]).resize(self.im_size, resample=Image.BICUBIC))
-        image = torch.Tensor(image).permute(2, 0, 1) / 255.0
         mask = np.array(Image.open(self.mask_dir + self.image_fns[idx]).resize(self.im_size, resample=Image.NEAREST))
         obj_ids = np.unique(mask)[1:]
+
+        if self.transform:
+
+            # hor-ver flip
+            image, instances = self.horizontal_flip(image, instances)
+            image, instances = self.vertical_flip(image, instances)
+
+            # rotate
+            image, instances = self.random_rotation(image, instances)
+
+            # colour jitter
+            image = self.colour_jitter(image)
+
+            # random crop
+            image, instances = self.random_crop(image, instances)
+        
+        image = torch.Tensor(image).permute(2, 0, 1) #/ 255.0
+        image = (image - self.mean) / self.std
         
         # split the color-encoded mask into a set of binary masks
         masks = mask == obj_ids[:, None, None]
@@ -233,3 +258,40 @@ class EMPSMaskRCNN(Dataset):
         target["iscrowd"] = iscrowd
 
         return image, target
+
+    def horizontal_flip(self, image, instances, p=0.5):
+        if np.random.uniform() < p:
+            image = self.hor_flip(image)
+            instances = self.hor_flip(instances)
+        return image, instances
+
+    def vertical_flip(self, image, instances, p=0.5):
+        if np.random.uniform() < p:
+            image = self.vert_flip(image)
+            instances = self.vert_flip(instances)
+        return image, instances
+
+    def random_rotation(self, image, instances):
+        random_number = np.random.uniform()
+        if random_number < 0.25:
+            image = image.rotate(90)
+            instances = instances.rotate(90)
+        elif (random_number >= 0.25) & (random_number < 0.5):
+            image = image.rotate(180)
+            instances = instances.rotate(180)
+        elif (random_number >= 0.5) & (random_number < 0.75):
+            image = image.rotate(270)
+            instances = instances.rotate(270)
+        return image, instances
+
+    def random_crop(self, image, instances):
+        if np.random.uniform() <= 0.333:
+            i, j, h, w = self.crop.get_params(image, self.crop.size)
+            image_cropped = transforms.functional.crop(image, i, j, h, w).resize(self.im_size, resample=Image.BICUBIC)
+            instances_cropped = transforms.functional.crop(instances, i, j, h, w).resize(self.im_size, resample=Image.NEAREST)
+            # recursively random crop until n instances > 0 (not a problem in almost all cases.)
+            if len(np.unique(np.array(instances_cropped))) == 1:
+                image_cropped, instances_cropped = self.random_crop(image, instances)
+            return image_cropped, instances_cropped
+        else:
+            return image, instances
