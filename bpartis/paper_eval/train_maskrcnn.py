@@ -90,21 +90,24 @@ for epoch in range(namespace.epochs):
     epoch_val_aps = []
     epoch_val_ap_50s = []
     model.eval()
-    for (images, targets) in val_loader:
-        images = list(image.to(namespace.device) for image in images)
-        targets = [{k: v.to(namespace.device) for k, v in t.items()} for t in targets]
-        outputs = model(images)
-        for i, output in enumerate(outputs):
-            pred_masks = output['masks'].detach()
-            gt_masks = targets[i]['masks'].detach()
-            # print('pred_masks', pred_masks.shape, 'gt_masks', gt_masks.shape)
-            iou, ap, ap_50, ap_75 = metrics(pred_masks, gt_masks)
-            epoch_val_ious.append(iou)
-            epoch_val_aps.append(ap)
-            epoch_val_ap_50s.append(ap_50)
-    
-    if (namespace.end_lr is not None) & (epoch+1 <= int(namespace.epochs*0.75)):
-        lr_scheduler.step()
+
+    if epoch > 4:
+
+        for (images, targets) in val_loader:
+            images = list(image.to(namespace.device) for image in images)
+            targets = [{k: v.to(namespace.device) for k, v in t.items()} for t in targets]
+            outputs = model(images)
+            for i, output in enumerate(outputs):
+                pred_masks = output['masks'].detach()
+                gt_masks = targets[i]['masks'].detach()
+                # print('pred_masks', pred_masks.shape, 'gt_masks', gt_masks.shape)
+                iou, ap, ap_50, ap_75 = metrics(pred_masks, gt_masks)
+                epoch_val_ious.append(iou)
+                epoch_val_aps.append(ap)
+                epoch_val_ap_50s.append(ap_50)
+        
+        if (namespace.end_lr is not None) & (epoch+1 <= int(namespace.epochs*0.75)):
+            lr_scheduler.step()
 
     save_model = (np.mean(epoch_val_ious) < np.min(losses['val-iou']) if epoch > 0 else False)
     losses['val-iou'].append(np.mean(epoch_val_ious))

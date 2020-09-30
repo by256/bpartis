@@ -35,7 +35,7 @@ def compute_tp_fp_fn(pred, gt, t=0.5):
                   # gt_idx, pred_idx, match, iou
     match_table = []
 
-    print('pred', pred.shape, 'gt', gt.shape)
+    # print('pred', pred.shape, 'gt', gt.shape)
 
     for gt_idx, gt_mask in enumerate(gt):
         for pred_idx, pred_mask in enumerate(pred):
@@ -45,7 +45,7 @@ def compute_tp_fp_fn(pred, gt, t=0.5):
             match_table.append(row)
     
     match_table = np.array(match_table)
-    print(match_table, '\n')
+    # print(match_table, '\n')
 
     # get tp and fn
     for gt_idx in range(len(gt)):
