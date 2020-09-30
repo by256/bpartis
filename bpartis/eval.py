@@ -21,9 +21,11 @@ from torch.utils.data import DataLoader
 from torch.optim import Adam
 from torch.optim.lr_scheduler import ExponentialLR
 
+from cluster import Cluster
 from data import EMPSDataset
 from models import BranchedERFNet
 from losses import SpatialEmbLoss
+from utils.eval import metrics
 from utils.train import train_test_split_emps
 from uncertainty import enable_eval_dropout, monte_carlo_predict
 
@@ -57,8 +59,10 @@ model.eval()
 seg_cmap = matplotlib.cm.tab20
 seg_cmap.set_bad(color='k')
 
+cluster = Cluster(n_sigma=2, device=namespace.device)
+
 for (image, instances, class_labels) in val_loader:
-    output = model(image)
+    output = model(image).detach()
     loss, ious = criterion(output, instances, class_labels, iou=True)
     loss = loss.mean()
     val_losses.append(loss.item())
