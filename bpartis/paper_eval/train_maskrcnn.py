@@ -168,8 +168,8 @@ if namespace.end_lr is not None:
     decay = compute_decay_rate(start_lr=namespace.lr, end_lr=namespace.end_lr, epochs=int(namespace.epochs*0.75))
     lr_scheduler = ExponentialLR(optimizer=optimizer, gamma=decay)
 
-from engine import train_one_epoch, evaluate
-import utils
+from vision.torchvision.engine import train_one_epoch, evaluate
+import vision.torchvision.utils
 
 for epoch in range(namespace.epochs):
     # train for one epoch, printing every 10 iterations
