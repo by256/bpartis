@@ -35,6 +35,8 @@ def compute_tp_fp_fn(pred, gt, t=0.5):
                   # gt_idx, pred_idx, match, iou
     match_table = []
 
+    print('pred', pred.shape, 'gt', gt.shape)
+
     for gt_idx, gt_mask in enumerate(gt):
         for pred_idx, pred_mask in enumerate(pred):
             iou = compute_iou(gt_mask, pred_mask).item()
