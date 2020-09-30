@@ -22,6 +22,7 @@ def compute_iou(pred_mask, gt_mask):
 
     pred_mask = pred_mask.byte()
     gt_mask = gt_mask.byte()
+    print('pred_mask', pred_mask.shape, 'gt_mask', gt_mask.shape)
     intersection = torch.bitwise_and(pred_mask, gt_mask).sum().float()
     union = torch.bitwise_or(pred_mask, gt_mask).sum().float()
     return intersection / union
@@ -36,7 +37,7 @@ def compute_tp_fp_fn(pred, gt, t=0.5):
 
     for gt_idx, gt_mask in enumerate(gt):
         for pred_idx, pred_mask in enumerate(pred):
-            iou = compute_iou(gt_mask, pred_mask)
+            iou = compute_iou(gt_mask, pred_mask).item()
             match = 1 if iou > t else 0
             row = [gt_idx, pred_idx, match, iou]
             match_table.append(row)
@@ -46,7 +47,6 @@ def compute_tp_fp_fn(pred, gt, t=0.5):
     # get tp and fn
     for gt_idx in range(len(gt)):
         current_idx_mt = match_table[match_table[:, 0] == gt_idx]
-        # print(current_idx_mt, '\n')
         n_matches = np.sum(current_idx_mt[:, 2], dtype=int)
         if n_matches > 0:
             tp += 1
@@ -62,7 +62,6 @@ def compute_tp_fp_fn(pred, gt, t=0.5):
     for pred_idx in range(len(pred)):
         current_idx_mt = match_table[match_table[:, 1] == pred_idx]
         n_matches = np.sum(current_idx_mt[:, 2], dtype=int)
-        n_iou_gt_zero = np.sum((current_idx_mt[:, 3] > 0.0).astype(int))
 
         if n_matches > 0:
             max_iou = np.max(current_idx_mt[:, 3])
