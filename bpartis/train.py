@@ -43,7 +43,7 @@ train_dataset, val_dataset = train_test_split_emps(EMPSDataset,
                                                    im_size=namespace.im_size, 
                                                    device=namespace.device)
 
-train_dataset.image_fns = train_dataset.image_fns[:200] ### for model capacity tests
+train_dataset.image_fns = train_dataset.image_fns[:250] ### for model capacity tests
 
 print('Train: {}    Val: {}'.format(len(train_dataset), len(val_dataset)))
 
