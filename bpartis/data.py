@@ -202,24 +202,27 @@ class EMPSMaskRCNN(Dataset):
         return len(self.image_fns)
 
     def __getitem__(self, idx):
-        image = np.array(Image.open(self.image_dir + self.image_fns[idx]).resize(self.im_size, resample=Image.BICUBIC))
-        mask = np.array(Image.open(self.mask_dir + self.image_fns[idx]).resize(self.im_size, resample=Image.NEAREST))
+        image = Image.open(self.image_dir + self.image_fns[idx]).resize(self.im_size, resample=Image.BICUBIC)
+        mask = Image.open(self.mask_dir + self.image_fns[idx]).resize(self.im_size, resample=Image.NEAREST)
         obj_ids = np.unique(mask)[1:]
 
         if self.transform:
 
             # hor-ver flip
-            image, instances = self.horizontal_flip(image, instances)
-            image, instances = self.vertical_flip(image, instances)
+            image, mask = self.horizontal_flip(image, mask)
+            image, mask = self.vertical_flip(image, mask)
 
             # rotate
-            image, instances = self.random_rotation(image, instances)
+            image, mask = self.random_rotation(image, mask)
 
             # colour jitter
             image = self.colour_jitter(image)
 
             # random crop
-            image, instances = self.random_crop(image, instances)
+            image, mask = self.random_crop(image, mask)
+        
+        image = np.array(image)
+        mask = np.array(mask)
         
         image = torch.Tensor(image).permute(2, 0, 1) 
         image = image / 255.0
