@@ -130,7 +130,7 @@ class EMPSMaskRCNN(Dataset):
             image = self.colour_jitter(image)
 
             # random crop
-            image, mask = self.random_crop(image, mask)
+            # image, mask = self.random_crop(image, mask)
         
         image = np.array(image)
         mask = np.array(mask)
