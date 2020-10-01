@@ -20,6 +20,7 @@ import matplotlib.pyplot as plt
 import torch
 from torch.utils.data import Dataset
 from torch.utils.data import DataLoader
+from torchvision import datasets, models, transforms
 from torch.optim import Adam
 from torch.optim.lr_scheduler import ExponentialLR
 from torchvision.models.detection.mask_rcnn import MaskRCNN
