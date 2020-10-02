@@ -16,11 +16,11 @@ import torch
 
 class Cluster:
 
-    def __init__(self, n_sigma=1, device='cuda'):
+    def __init__(self, n_sigma=1, h=512, w=512, device='cuda'):
         self.n_sigma = n_sigma
         self.device = device
-        xm = torch.linspace(0, 1, 512).view(1, 1, -1).expand(1, 512, 512)
-        ym = torch.linspace(0, 1, 512).view(1, -1, 1).expand(1, 512, 512)
+        xm = torch.linspace(0, 1, w).view(1, 1, -1).expand(1, h, w)
+        ym = torch.linspace(0, 1, h).view(1, -1, 1).expand(1, h, w)
         xym = torch.cat((xm, ym), 0)
         self.xym = xym.to(self.device)
 
@@ -33,7 +33,7 @@ class Cluster:
         sigma = prediction[2:2+self.n_sigma]  # n_sigma x h x w
         seed_map = torch.sigmoid(prediction[2+self.n_sigma:2+self.n_sigma + 1])  # 1 x h x w
        
-        instance_map = torch.zeros(height, width).byte()
+        instance_map = torch.zeros(height, width).short()
         instances = []
 
         count = 1
@@ -45,8 +45,8 @@ class Cluster:
             sigma_masked = sigma[mask.expand_as(sigma)].view(self.n_sigma, -1)
             seed_map_masked = seed_map[mask].view(1, -1)
 
-            unclustered = torch.ones(mask.sum()).byte().to(self.device)
-            instance_map_masked = torch.zeros(mask.sum()).byte().to(self.device)
+            unclustered = torch.ones(mask.sum()).short().to(self.device)
+            instance_map_masked = torch.zeros(mask.sum()).short().to(self.device)
 
             while(unclustered.sum() > 128):
 
@@ -65,8 +65,8 @@ class Cluster:
                 if proposal.sum() > 128:
                     if unclustered[proposal].sum().float()/proposal.sum().float() > 0.5:
                         instance_map_masked[proposal.squeeze()] = count
-                        instance_mask = torch.zeros(height, width).byte()
-                        instance_mask[mask.squeeze().cpu()] = proposal.cpu().byte()
+                        instance_mask = torch.zeros(height, width).short()
+                        instance_mask[mask.squeeze().cpu()] = proposal.cpu().short()
                         instances.append(
                             {'mask': instance_mask.squeeze()*255, 'score': seed_score})
                         count += 1
@@ -86,7 +86,7 @@ class Cluster:
         sigma = prediction[2:2+self.n_sigma]  # n_sigma x h x w
         seed_map = torch.sigmoid(prediction[2+self.n_sigma:2+self.n_sigma + 1])  # 1 x h x w
        
-        instance_map = torch.zeros(height, width).byte()
+        instance_map = torch.zeros(height, width).short()
         instances = []
 
         monte_carlo_semantic_map = torch.zeros(height, width).to(self.device)
@@ -100,8 +100,8 @@ class Cluster:
             sigma_masked = sigma[mask.expand_as(sigma)].view(self.n_sigma, -1)
             seed_map_masked = seed_map[mask].view(1, -1)
 
-            unclustered = torch.ones(mask.sum()).byte().to(self.device)
-            instance_map_masked = torch.zeros(mask.sum()).byte().to(self.device)
+            unclustered = torch.ones(mask.sum()).short().to(self.device)
+            instance_map_masked = torch.zeros(mask.sum()).short().to(self.device)
 
             while(unclustered.sum() > 128):
 
@@ -123,8 +123,8 @@ class Cluster:
                 if proposal.sum() > 128:
                     if unclustered[proposal].sum().float()/proposal.sum().float() > 0.5:
                         instance_map_masked[proposal.squeeze()] = count
-                        instance_mask = torch.zeros(height, width).byte()
-                        instance_mask[mask.squeeze().cpu()] = proposal.cpu().byte()
+                        instance_mask = torch.zeros(height, width).short()
+                        instance_mask[mask.squeeze().cpu()] = proposal.cpu().short()
                         instances.append(
                             {'mask': instance_mask.squeeze()*255, 'score': seed_score})
                         count += 1
