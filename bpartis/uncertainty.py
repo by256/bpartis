@@ -31,7 +31,8 @@ def predictive_entropy(mc_preds):
     return entropy(torch.mean(mc_preds, dim=0))
 
 def monte_carlo_predict(model, image, n_samples=30, device='cuda'):
-    cluster = Cluster(n_sigma=2, device=device)
+    h, w = image.shape[-2:]
+    cluster = Cluster(n_sigma=2, h=h, w=w, device=device)
     model.eval()
     enable_eval_dropout(model)
 
@@ -46,8 +47,8 @@ def monte_carlo_predict(model, image, n_samples=30, device='cuda'):
     semantic_predictions = []
     for i in range(n_samples):
         prediction, mc_sem_map, _ = cluster.monte_carlo_cluster(mc_outputs[i])
-        # semantic_predictions.append((prediction > 0.0).float())
-        semantic_predictions.append(mc_sem_map)
+        semantic_predictions.append((prediction > 0.0).float())
+        # semantic_predictions.append(mc_sem_map)
 
     semantic_predictions = torch.stack(semantic_predictions, dim=0)
     total = predictive_entropy(semantic_predictions)
