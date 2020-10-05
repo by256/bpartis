@@ -30,7 +30,7 @@ def expected_entropy(mc_preds):
 def predictive_entropy(mc_preds):
     return entropy(torch.mean(mc_preds, dim=0))
 
-def monte_carlo_predict(model, image, n_samples=30, device='cuda'):
+def monte_carlo_predict(model, image, n_samples=50, device='cuda'):
     h, w = image.shape[-2:]
     cluster = Cluster(n_sigma=2, h=h, w=w, device=device)
     model.eval()
@@ -38,29 +38,25 @@ def monte_carlo_predict(model, image, n_samples=30, device='cuda'):
 
     # get monte carlo model samples
     mc_outputs = []
+    mc_seed_maps = []
     for i in range(n_samples):
         output = model(image).detach()
+        seed_map = torch.sigmoid(output[0, -1]).unsqueeze(0)
         mc_outputs.append(output)
+        mc_seed_maps.append(seed_map)
+
     mc_outputs = torch.cat(mc_outputs, dim=0)
+    mc_seed_maps = torch.cat(mc_seed_maps, dim=0)
 
-    # get semantic segmentations of monte carlo samples
-    semantic_predictions = []
-    for i in range(n_samples):
-        prediction, mc_sem_map, _ = cluster.monte_carlo_cluster(mc_outputs[i])
-        semantic_predictions.append((prediction > 0.0).float())
-        # semantic_predictions.append(mc_sem_map)
+    # MC prediction
+    mc_prediction, _ = cluster.cluster(mc_outputs.mean(dim=0))
 
-    semantic_predictions = torch.stack(semantic_predictions, dim=0)
-    total = predictive_entropy(semantic_predictions)
-    aleatoric = expected_entropy(semantic_predictions)
+    # Uncertainty
+    total = predictive_entropy(mc_seed_maps)
+    aleatoric = expected_entropy(mc_seed_maps)
     epistemic = total - aleatoric
-    epistemic = torch.clamp(epistemic, 0.0, 0.7)
 
-    # get instance prediction of mean mc_outputs
-    mean_mc_output = torch.mean(mc_outputs, dim=0)
-    mc_instance_prediction, _ = cluster.cluster(mean_mc_output)
-
-    return mc_instance_prediction, epistemic
+    return mc_prediction, epistemic, total, aleatoric
 
 def uncertainty_filtering(prediction, uncertainty, t=0.15):
 
