@@ -56,7 +56,7 @@ def monte_carlo_predict(model, image, n_samples=50, device='cuda'):
     aleatoric = expected_entropy(mc_seed_maps)
     epistemic = total - aleatoric
 
-    return mc_prediction, epistemic, total, aleatoric
+    return mc_prediction, epistemic
 
 def uncertainty_filtering(prediction, uncertainty, t=0.0125):
 
