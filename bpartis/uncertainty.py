@@ -58,7 +58,7 @@ def monte_carlo_predict(model, image, n_samples=50, device='cuda'):
 
     return mc_prediction, epistemic, total, aleatoric
 
-def uncertainty_filtering(prediction, uncertainty, t=0.15):
+def uncertainty_filtering(prediction, uncertainty, t=0.0125):
 
     filtered_pred = torch.zeros_like(prediction)
 
