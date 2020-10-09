@@ -19,7 +19,7 @@ from utils.losses import lovasz_hinge
 
 class SpatialEmbLoss(nn.Module):
 
-    def __init__(self, to_center=False, n_sigma=2, foreground_weight=1):
+    def __init__(self, to_center=False, n_sigma=2, foreground_weight=1, h=512, w=512):
         super().__init__()
         self.to_center = to_center
         self.n_sigma = n_sigma
@@ -28,10 +28,10 @@ class SpatialEmbLoss(nn.Module):
             to_center, n_sigma, foreground_weight))
 
         # coordinate map
-        xm = torch.linspace(0, 1, 512).view(
-            1, 1, -1).expand(1, 512, 512)
-        ym = torch.linspace(0, 1, 512).view(
-            1, -1, 1).expand(1, 512, 512)
+        xm = torch.linspace(0, 1, w).view(
+            1, 1, -1).expand(1, h, w)
+        ym = torch.linspace(0, 1, h).view(
+            1, -1, 1).expand(1, h, w)
         xym = torch.cat((xm, ym), 0)
 
         self.register_buffer("xym", xym)
