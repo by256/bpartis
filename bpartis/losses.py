@@ -32,22 +32,18 @@ class SpatialEmbLoss(nn.Module):
             1, 1, -1).expand(1, h, w)
         ym = torch.linspace(0, 1, h).view(
             1, -1, 1).expand(1, h, w)
-        xym = torch.cat((xm, ym), 0)
-
-        self.register_buffer("xym", xym)
+        self.xym = torch.cat((xm, ym), 0).contiguous()
 
     def forward(self, prediction, instances, labels, w_inst=1, w_var=10, w_seed=1, iou=False, iou_meter=None):
 
         batch_size, height, width = prediction.size(0), prediction.size(2), prediction.size(3)
-
-        xym_s = self.xym[:, 0:height, 0:width].contiguous()  # 2 x h x w
 
         loss = 0
         mean_iou = 0
 
         for b in range(0, batch_size):
 
-            spatial_emb = torch.tanh(prediction[b, 0:2]) + xym_s  # 2 x h x w
+            spatial_emb = torch.tanh(prediction[b, 0:2]) + self.xym_s  # 2 x h x w
             sigma = prediction[b, 2:2+self.n_sigma]  # n_sigma x h x w
             seed_map = torch.sigmoid(
                 prediction[b, 2+self.n_sigma:2+self.n_sigma + 1])  # 1 x h x w
