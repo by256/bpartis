@@ -37,9 +37,9 @@ python bpartis/pretrain.py --data-dir=<> -->
 
 #### Training BPartIS
 
-6. Download the EMPS dataset from here. UPDATE THIS WHEN DATA LOCATION IS DECIDED.
+3. Download the EMPS dataset from here. UPDATE THIS WHEN DATA LOCATION IS DECIDED.
 
-7. Train the BPartIS model on the EMPS dataset. If you pre-trained on the SEM dataset, be sure to use the --finetune argument.
+4. Train the BPartIS model on the EMPS dataset. If you pre-trained on the SEM dataset, be sure to use the --finetune argument.
 
 ```console
 python bpartis/train.py --data-dir=data/ --finetune=1 --device=cuda --epochs=300 --save-dir=bpartis/saved_models/
