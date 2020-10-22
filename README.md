@@ -17,7 +17,7 @@ git clone https://github.com/by256/bpartis.git
 python3 -m pip install -r requirements.txt
 ```
 
-#### Unsupervised Pre-Training (Optional)
+<!-- #### Unsupervised Pre-Training (Optional)
 
 If you are not interested in pre-training on the [SEM dataset](https://www.nature.com/articles/sdata2018172) then skip this section. Otherwise, you first need to download the SEM dataset and preprocess it as follows.
 
@@ -32,7 +32,7 @@ python preprocess_sem_data.py --cat-dir=<cat_dir_path> --save-dst=<save_path>
 5. Pre-train the model on the SEM dataset, passing as an argument the directory containing the preprocessed data:
 
 ```console
-python bpartis/pretrain.py --data-dir=<>
+python bpartis/pretrain.py --data-dir=<> -->
 ```
 
 #### Training BPartIS
