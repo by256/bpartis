@@ -33,7 +33,7 @@ python preprocess_sem_data.py --cat-dir=<cat_dir_path> --save-dst=<save_path>
 
 ```console
 python bpartis/pretrain.py --data-dir=<> -->
-```
+<!-- ``` -->
 
 #### Training BPartIS
 
