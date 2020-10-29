@@ -37,7 +37,7 @@ class Cluster:
         instances = []
 
         count = 1
-        mask = (seed_map > 0.5).byte()
+        mask = (seed_map > 0.5).bool()
 
         if mask.sum() > 128:
 
