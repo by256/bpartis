@@ -62,6 +62,10 @@ class EMPSDataset(Dataset):
             # random crop
             image, instances, labels = self.random_crop(image, instances, labels)
 
+            # tile
+            print(type(image))
+            image, instances, labels = self.tile(image, instances, labels)
+
             # reduce quality
             # image = self.random_reduce_quality(image)
 
@@ -130,6 +134,19 @@ class EMPSDataset(Dataset):
         image = image.resize((int(self.im_size[0]*scale_factor), int(self.im_size[1]*scale_factor)), resample=Image.BICUBIC)
         image = image.resize(self.im_size, resample=Image.NEAREST)
         return image
+
+    def tile(self, image, instances, labels, p=0.05):
+        if np.random.uniform() <= p:
+            tile_size = np.array(self.im_size) // 2
+            image = image.resize(tile_size, resample=Image.BICUBIC)
+            instances = instances.resize(tile_size, resample=Image.NEAREST)
+            labels = labels.resize(tile_size, resample=Image.NEAREST)
+
+            image = np.tile(np.array(image), (2, 2, 1))
+            instances = np.tile(np.array(instances), (2, 2))
+            labels = np.tile(np.array(labels), (2, 2))
+
+        return image, instances, labels
 
 
 class SEMDataset(Dataset):
