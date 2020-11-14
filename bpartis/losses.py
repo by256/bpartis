@@ -32,7 +32,8 @@ class SpatialEmbLoss(nn.Module):
             1, 1, -1).expand(1, h, w)
         ym = torch.linspace(0, 1, h).view(
             1, -1, 1).expand(1, h, w)
-        self.xym = torch.cat((xm, ym), 0).contiguous()
+        xym = torch.cat((xm, ym), 0).contiguous()
+        self.register_buffer("xym", xym)
 
     def forward(self, prediction, instances, labels, w_inst=1, w_var=10, w_seed=1, iou=False, iou_meter=None):
 

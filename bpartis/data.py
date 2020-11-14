@@ -63,7 +63,6 @@ class EMPSDataset(Dataset):
             image, instances, labels = self.random_crop(image, instances, labels)
 
             # tile
-            print(type(image))
             image, instances, labels = self.tile(image, instances, labels)
 
             # reduce quality
