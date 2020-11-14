@@ -43,7 +43,7 @@ class SpatialEmbLoss(nn.Module):
 
         for b in range(0, batch_size):
 
-            spatial_emb = torch.tanh(prediction[b, 0:2]) + self.xym_s  # 2 x h x w
+            spatial_emb = torch.tanh(prediction[b, 0:2]) + self.xym  # 2 x h x w
             sigma = prediction[b, 2:2+self.n_sigma]  # n_sigma x h x w
             seed_map = torch.sigmoid(
                 prediction[b, 2+self.n_sigma:2+self.n_sigma + 1])  # 1 x h x w
