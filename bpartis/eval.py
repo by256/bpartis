@@ -21,7 +21,6 @@ from torch.utils.data import DataLoader
 from torch.optim import Adam
 from torch.optim.lr_scheduler import ExponentialLR
 
-from cluster import Cluster
 from data import EMPSDataset
 from models import BranchedERFNet
 from losses import SpatialEmbLoss
@@ -58,8 +57,6 @@ model.eval()
 # colormap for segmentation maps 
 seg_cmap = matplotlib.cm.tab20
 seg_cmap.set_bad(color='k')
-
-cluster = Cluster(n_sigma=2, device=namespace.device)
 
 for (image, instances, class_labels) in val_loader:
     output = model(image).detach()
