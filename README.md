@@ -41,7 +41,7 @@ python bpartis/pretrain.py --data-dir=<> -->
 
 #### Training BPartIS
 
-3. Download the EMPS dataset from here. UPDATE THIS WHEN DATA LOCATION IS DECIDED.
+3. Download the EMPS dataset from [here](https://github.com/by256/emps).
 
 4. Train the BPartIS model on the EMPS dataset.
 
