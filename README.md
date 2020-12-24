@@ -12,12 +12,12 @@ If you are interested in training **bpartis** from scratch, or you would like to
 #### Installation
 
 1. Clone the repository
-```console
+```bash
 git clone https://github.com/by256/bpartis.git
 ```
 
 2. Install requirements
-```console
+```bash
 python3 -m pip install -r requirements.txt
 ```
 
@@ -45,6 +45,6 @@ python bpartis/pretrain.py --data-dir=<> -->
 
 4. Train the BPartIS model on the EMPS dataset.
 
-```console
+```bash
 python bpartis/train.py --data-dir=data/ --device=cuda --epochs=300 --save-dir=bpartis/saved_models/
 ```
