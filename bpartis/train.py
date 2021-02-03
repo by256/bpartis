@@ -105,11 +105,11 @@ for epoch in range(namespace.epochs):
     if (namespace.end_lr is not None) & (epoch+1 <= int(namespace.epochs*0.75)):
         lr_scheduler.step()
 
-    save_model = (np.mean(epoch_test_losses) < np.min(losses['val']) if epoch > 0 else False)
+    save_model = (np.mean(epoch_test_losses) < np.min(losses['test']) if epoch > 0 else False)
     losses['test'].append(np.mean(epoch_test_losses))
     losses['test-iou'].append(np.mean(epoch_test_ious))
 
-    print('{}/{}    Train: {:.5f}    Test: {:.5f}    Val IOU: {:.5f}    lr: {:.9f}    T: {:.2f} s'.format(epoch+1, namespace.epochs, losses['train'][-1], losses['val'][-1], losses['val-iou'][-1], optimizer.param_groups[-1]['lr'], time.time()-start))
+    print('{}/{}    Train: {:.5f}    Test: {:.5f}    Test IOU: {:.5f}    lr: {:.9f}    T: {:.2f} s'.format(epoch+1, namespace.epochs, losses['train'][-1], losses['test'][-1], losses['test-iou'][-1], optimizer.param_groups[-1]['lr'], time.time()-start))
 
     if save_model:
         torch.save(model.state_dict(), '{}emps-model.pt'.format(namespace.save_dir))
@@ -120,12 +120,12 @@ with open('{}logs/emps-losses.pkl'.format(namespace.save_dir), 'wb') as f:
 fig, axes = plt.subplots(1, 2, figsize=(15, 5))
 
 axes[0].plot(losses['train'], label='train')
-axes[0].plot(losses['test'], label='val')
-axes[0].set_title('End Train: {:.5f}    End Val: {:.5f}    Best Val: {:.5f}'.format(losses['train'][-1], losses['val'][-1], np.min(losses['val'])))
+axes[0].plot(losses['test'], label='test')
+axes[0].set_title('End Train: {:.5f}    End Test: {:.5f}    Best Test: {:.5f}'.format(losses['train'][-1], losses['test'][-1], np.min(losses['test'])))
 axes[0].set_xlabel('Epoch')
 axes[0].set_ylabel('Spatial Embedding Loss')
 axes[1].plot(losses['test-iou'])
-axes[1].set_title('End IOU: {:.5f}    Best IOU: {:.5f}'.format(losses['val-iou'][-1], np.max(losses['val-iou'])))
+axes[1].set_title('End IOU: {:.5f}    Best IOU: {:.5f}'.format(losses['test-iou'][-1], np.max(losses['test-iou'])))
 axes[1].set_xlabel('Epoch')
 axes[1].set_ylabel('Mean IOU')
 plt.savefig('{}logs/emps-losses.png'.format(namespace.save_dir), bbox_inches='tight', pad_inches=0.1)
