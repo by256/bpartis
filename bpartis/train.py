@@ -38,17 +38,17 @@ parser.add_argument('--end-lr', metavar='end_lr', type=float, default=None, help
 parser.add_argument('--epochs', metavar='epochs', type=int, default=300, help='No. of epochs to train.')
 namespace = parser.parse_args()
 
-train_dataset, val_dataset = train_test_split_emps(EMPSDataset, 
+train_dataset, test_dataset = train_test_split_emps(EMPSDataset, 
                                                    namespace.data_dir, 
                                                    im_size=namespace.im_size, 
                                                    device=namespace.device)
 
 train_dataset.image_fns = train_dataset.image_fns[:300] ### for model capacity tests
 
-print('Train: {}    Val: {}'.format(len(train_dataset), len(val_dataset)))
+print('Train: {}    Test: {}'.format(len(train_dataset), len(test_dataset)))
 
 train_loader = DataLoader(train_dataset, batch_size=namespace.batch_size, shuffle=True)
-val_loader = DataLoader(val_dataset, batch_size=namespace.batch_size)
+test_loader = DataLoader(test_dataset, batch_size=namespace.batch_size)
 
 model = BranchedERFNet(num_classes=[4, 1]).to(namespace.device)
 model.init_output(n_sigma=2)
@@ -67,7 +67,7 @@ if namespace.end_lr is not None:
     decay = compute_decay_rate(start_lr=namespace.lr, end_lr=namespace.end_lr, epochs=int(namespace.epochs*0.75))
     lr_scheduler = ExponentialLR(optimizer=optimizer, gamma=decay)
 
-losses = {'train': [], 'val': [], 'val-iou': []}
+losses = {'train': [], 'test': [], 'test-iou': []}
 
 for epoch in range(namespace.epochs):
 
@@ -92,24 +92,24 @@ for epoch in range(namespace.epochs):
         epoch_train_losses.append(loss.item())
     losses['train'].append(np.mean(epoch_train_losses))
 
-    epoch_val_losses = []
-    epoch_val_ious = []
+    epoch_test_losses = []
+    epoch_test_ious = []
     model.eval()
-    for (image, instances, class_labels) in val_loader:
+    for (image, instances, class_labels) in test_loader:
         output = model(image)
         loss, ious = criterion(output, instances, class_labels, **loss_w, iou=True)
         loss = loss.mean()
-        epoch_val_losses.append(loss.item())
-        epoch_val_ious.append(ious)
+        epoch_test_losses.append(loss.item())
+        epoch_test_ious.append(ious)
     
     if (namespace.end_lr is not None) & (epoch+1 <= int(namespace.epochs*0.75)):
         lr_scheduler.step()
 
-    save_model = (np.mean(epoch_val_losses) < np.min(losses['val']) if epoch > 0 else False)
-    losses['val'].append(np.mean(epoch_val_losses))
-    losses['val-iou'].append(np.mean(epoch_val_ious))
+    save_model = (np.mean(epoch_test_losses) < np.min(losses['val']) if epoch > 0 else False)
+    losses['test'].append(np.mean(epoch_test_losses))
+    losses['test-iou'].append(np.mean(epoch_test_ious))
 
-    print('{}/{}    Train: {:.5f}    Val: {:.5f}    Val IOU: {:.5f}    lr: {:.9f}    T: {:.2f} s'.format(epoch+1, namespace.epochs, losses['train'][-1], losses['val'][-1], losses['val-iou'][-1], optimizer.param_groups[-1]['lr'], time.time()-start))
+    print('{}/{}    Train: {:.5f}    Test: {:.5f}    Val IOU: {:.5f}    lr: {:.9f}    T: {:.2f} s'.format(epoch+1, namespace.epochs, losses['train'][-1], losses['val'][-1], losses['val-iou'][-1], optimizer.param_groups[-1]['lr'], time.time()-start))
 
     if save_model:
         torch.save(model.state_dict(), '{}emps-model.pt'.format(namespace.save_dir))
@@ -120,11 +120,11 @@ with open('{}logs/emps-losses.pkl'.format(namespace.save_dir), 'wb') as f:
 fig, axes = plt.subplots(1, 2, figsize=(15, 5))
 
 axes[0].plot(losses['train'], label='train')
-axes[0].plot(losses['val'], label='val')
+axes[0].plot(losses['test'], label='val')
 axes[0].set_title('End Train: {:.5f}    End Val: {:.5f}    Best Val: {:.5f}'.format(losses['train'][-1], losses['val'][-1], np.min(losses['val'])))
 axes[0].set_xlabel('Epoch')
 axes[0].set_ylabel('Spatial Embedding Loss')
-axes[1].plot(losses['val-iou'])
+axes[1].plot(losses['test-iou'])
 axes[1].set_title('End IOU: {:.5f}    Best IOU: {:.5f}'.format(losses['val-iou'][-1], np.max(losses['val-iou'])))
 axes[1].set_xlabel('Epoch')
 axes[1].set_ylabel('Mean IOU')

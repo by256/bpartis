@@ -14,7 +14,7 @@ import torch
 import numpy as np
 
 
-def split_train_val_dois(dataset, dois):
+def split_train_test_dois(dataset, dois):
     new_fns = []
     for fn in dataset.image_fns:
         keep_fn = False
@@ -36,7 +36,7 @@ def compute_decay_rate(start_lr, end_lr, epochs):
 
 def train_test_split_emps(dataset, data_dir, im_size=(512, 512), device='cuda'):
     train_dataset = dataset('{}/processed-images/'.format(data_dir), '{}/segmaps/'.format(data_dir), im_size=im_size, device=device)
-    val_dataset = dataset('{}/processed-images/'.format(data_dir), '{}/segmaps/'.format(data_dir), im_size=im_size, transform=False, device=device)
+    test_dataset = dataset('{}/processed-images/'.format(data_dir), '{}/segmaps/'.format(data_dir), im_size=im_size, transform=False, device=device)
 
     unique_dois = sorted(list(set([x.split('.png')[0].split(' (')[0].split('.gr')[0] for x in train_dataset.image_fns])))
 
@@ -44,16 +44,14 @@ def train_test_split_emps(dataset, data_dir, im_size=(512, 512), device='cuda'):
     indices = np.arange(len(unique_dois))
     np.random.shuffle(indices)
 
-    # train_indices = indices[:int(0.88*len(indices))]
-    # val_indices = indices[int(0.88*len(indices)):]
     train_indices = indices[:int(0.77*len(indices))]
-    val_indices = indices[int(0.77*len(indices)):]
+    test_indices = indices[int(0.77*len(indices)):]
     train_dois = [unique_dois[i] for i in train_indices]
-    val_dois = [unique_dois[i] for i in val_indices]
+    test_dois = [unique_dois[i] for i in test_indices]
 
-    train_dataset = split_train_val_dois(train_dataset, train_dois)
-    val_dataset = split_train_val_dois(val_dataset, val_dois)
-    return train_dataset, val_dataset
+    train_dataset = split_train_test_dois(train_dataset, train_dois)
+    test_dataset = split_train_test_dois(test_dataset, test_dois)
+    return train_dataset, test_dataset
 
 def load_pretrained(model, path='./saved_models/', device='cuda'):
     # load encoder
