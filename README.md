@@ -2,7 +2,9 @@
 
 **B**ayesian **Part**icle **I**nstance **S**egmentation for Electron Microscopy Image Quantification
 
-# <img src="./header_image.png" height="190">
+<p align="center">
+    <img src="./header_image.png" width="500">
+</p>
 
 
 ## Training Models
