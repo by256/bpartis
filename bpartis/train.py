@@ -45,7 +45,7 @@ train_dataset, test_dataset = train_test_split_emps(EMPSDataset,
 
 # train_dataset.image_fns = train_dataset.image_fns[:300] ### for model capacity tests
 
-# for full emps set training
+# for full emps set training # TODO: remove later
 train_dataset = EMPSDataset('{}/processed-images/'.format(namespace.data_dir), '{}/segmaps/'.format(namespace.data_dir))
 
 print('Train: {}    Test: {}'.format(len(train_dataset), len(test_dataset)))
@@ -115,8 +115,10 @@ for epoch in range(namespace.epochs):
 
     print('{}/{}    Train: {:.5f}    Test: {:.5f}    Test IOU: {:.5f}    lr: {:.9f}    T: {:.2f} s'.format(epoch+1, namespace.epochs, losses['train'][-1], losses['test'][-1], losses['test-iou'][-1], optimizer.param_groups[-1]['lr'], time.time()-start))
 
-    if save_model:
-        torch.save(model.state_dict(), '{}emps-model.pt'.format(namespace.save_dir))
+    # if save_model:
+    #     torch.save(model.state_dict(), '{}emps-model.pt'.format(namespace.save_dir))
+    # TODO: undo this
+    torch.save(model.state_dict(), '{}emps-model.pt'.format(namespace.save_dir))
 
 with open('{}logs/emps-losses.pkl'.format(namespace.save_dir), 'wb') as f:
     pickle.dump(losses, f)
