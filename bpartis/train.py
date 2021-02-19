@@ -43,9 +43,11 @@ train_dataset, test_dataset = train_test_split_emps(EMPSDataset,
                                                    im_size=namespace.im_size, 
                                                    device=namespace.device)
 
-train_dataset.image_fns = train_dataset.image_fns[:300] ### for model capacity tests
+# train_dataset.image_fns = train_dataset.image_fns[:300] ### for model capacity tests
 
 print('Train: {}    Test: {}'.format(len(train_dataset), len(test_dataset)))
+
+train_dataset = EMPSDataset(namespace.data_dir)
 
 train_loader = DataLoader(train_dataset, batch_size=namespace.batch_size, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=namespace.batch_size)
