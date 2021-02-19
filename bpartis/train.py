@@ -47,7 +47,7 @@ train_dataset, test_dataset = train_test_split_emps(EMPSDataset,
 
 print('Train: {}    Test: {}'.format(len(train_dataset), len(test_dataset)))
 
-train_dataset = EMPSDataset(namespace.data_dir)
+train_dataset = EMPSDataset('{}/processed-images/'.format(namespace.data_dir), '{}/segmaps/'.format(namespace.data_dir))
 
 train_loader = DataLoader(train_dataset, batch_size=namespace.batch_size, shuffle=True)
 test_loader = DataLoader(test_dataset, batch_size=namespace.batch_size)
