@@ -10,6 +10,7 @@
 -----
 """
 
+import os
 import time
 import pickle
 import argparse
@@ -23,7 +24,7 @@ from torch.optim.lr_scheduler import ExponentialLR
 from data import EMPSDataset
 from models import BranchedERFNet
 from losses import SpatialEmbLoss
-from utils.train import train_test_split_emps, freeze_batchnorm_layers, compute_decay_rate, load_pretrained
+from utils.train import train_test_split_emps_old, freeze_batchnorm_layers, compute_decay_rate, load_pretrained, get_split_from_csv
 
 
 parser = argparse.ArgumentParser(description='Train model on EMPS dataset.')
@@ -38,15 +39,26 @@ parser.add_argument('--end-lr', metavar='end_lr', type=float, default=None, help
 parser.add_argument('--epochs', metavar='epochs', type=int, default=300, help='No. of epochs to train.')
 namespace = parser.parse_args()
 
-train_dataset, test_dataset = train_test_split_emps(EMPSDataset, 
-                                                   namespace.data_dir, 
-                                                   im_size=namespace.im_size, 
-                                                   device=namespace.device)
+# train_dataset, test_dataset = train_test_split_emps(EMPSDataset, 
+#                                                    namespace.data_dir, 
+#                                                    im_size=namespace.im_size, 
+#                                                    device=namespace.device)
 
 # train_dataset.image_fns = train_dataset.image_fns[:300] ### for model capacity tests
 
 # for full emps set training # TODO: remove later
-train_dataset = EMPSDataset('{}/processed-images/'.format(namespace.data_dir), '{}/segmaps/'.format(namespace.data_dir))
+# train_dataset = EMPSDataset('{}/processed-images/'.format(namespace.data_dir), '{}/segmaps/'.format(namespace.data_dir))
+
+dataset = EMPSDataset(os.path.join(namespace.data_dir, 'images/'), 
+                      os.path.join(namespace.data_dir, 'segmaps/'), 
+                      im_size=namespace.im_size, 
+                      device=namespace.device)
+
+train_csv = os.path.join(namespace.data_dir, 'train.csv')
+test_csv = os.path.join(namespace.data_dir, 'test.csv')
+
+train_dataset = get_split_from_csv(dataset, train_csv)
+test_dataset = get_split_from_csv(dataset, test_csv)
 
 print('Train: {}    Test: {}'.format(len(train_dataset), len(test_dataset)))
 
@@ -115,10 +127,10 @@ for epoch in range(namespace.epochs):
 
     print('{}/{}    Train: {:.5f}    Test: {:.5f}    Test IOU: {:.5f}    lr: {:.9f}    T: {:.2f} s'.format(epoch+1, namespace.epochs, losses['train'][-1], losses['test'][-1], losses['test-iou'][-1], optimizer.param_groups[-1]['lr'], time.time()-start))
 
-    # if save_model:
-    #     torch.save(model.state_dict(), '{}emps-model.pt'.format(namespace.save_dir))
+    if save_model:
+        torch.save(model.state_dict(), '{}emps-model.pt'.format(namespace.save_dir))
     # TODO: undo this
-    torch.save(model.state_dict(), '{}emps-model.pt'.format(namespace.save_dir))
+    # torch.save(model.state_dict(), '{}emps-model.pt'.format(namespace.save_dir))
 
 with open('{}logs/emps-losses.pkl'.format(namespace.save_dir), 'wb') as f:
     pickle.dump(losses, f)

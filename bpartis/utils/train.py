@@ -10,9 +10,24 @@
 -------------------------------------------------
 """
 
+import csv
+import copy
 import torch
 import numpy as np
 
+
+def get_split_from_csv(dataset, csv_path):
+    """Obtain a subset of the EMPS dataset for train test split purposes"""
+    dataset = copy.deepcopy(dataset)
+    with open(csv_path, newline='') as f:
+        reader = csv.reader(f)
+        split_fns = list(reader)
+    split_fns = [x[0] for x in split_fns]
+
+    split_image_fns = [x for x in dataset.image_fns if x.split('.png')[0] in split_fns]
+
+    dataset.image_fns = split_image_fns
+    return dataset
 
 def split_train_test_dois(dataset, dois):
     new_fns = []
@@ -34,7 +49,7 @@ def freeze_batchnorm_layers(model):
 def compute_decay_rate(start_lr, end_lr, epochs):
     return np.exp(np.log(end_lr/start_lr)/epochs)
 
-def train_test_split_emps(dataset, data_dir, im_size=(512, 512), device='cuda'):
+def train_test_split_emps_old(dataset, data_dir, im_size=(512, 512), device='cuda'):
     train_dataset = dataset('{}/processed-images/'.format(data_dir), '{}/segmaps/'.format(data_dir), im_size=im_size, device=device)
     test_dataset = dataset('{}/processed-images/'.format(data_dir), '{}/segmaps/'.format(data_dir), im_size=im_size, transform=False, device=device)
 
