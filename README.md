@@ -1,4 +1,4 @@
-# BPartIS
+# bpartis
 
 **B**ayesian **Part**icle **I**nstance **S**egmentation for Electron Microscopy Image Quantification
 
@@ -6,10 +6,32 @@
     <img src="./header_image.png" width="500">
 </p>
 
+This repository contains the official implementation of **bpartis** — a Bayesian deep neural network for nanoparticle instance segmentation. 
 
-## Training Models
+## Demo
 
-If you are interested in training **bpartis** from scratch, or you would like to reproduce our results, follow these steps:
+Try an in-browser demo on your electron microscopy images [here](https://imagedataextractor.org/demo).
+
+## Usage
+
+If you would like to use a pretrained **bpartis** model, we strongly recommend using [imagedataextractor](https://github.com/by256/imagedataextractor) to do so.
+
+```python
+import cv2
+from imagedataextractor.segment import ParticleSegmenter
+
+image = cv2.imread('<path/to/image>')  # PIL can also be used
+segmenter = ParticleSegmenter()
+
+segmentation, uncertainty, _ = segmenter.segment(image)
+
+```
+
+More detailed information can be found in the imagedataextractor segmentation [documentation](https://imagedataextractor.org/docs/segmentation).
+
+## Training
+
+If you are interested in training **bpartis** to reproduce our results, follow these steps:
 
 #### Installation
 
@@ -23,24 +45,6 @@ git clone https://github.com/by256/bpartis.git
 python3 -m pip install -r requirements.txt
 ```
 
-<!-- #### Unsupervised Pre-Training (Optional)
-
-If you are not interested in pre-training on the [SEM dataset](https://www.nature.com/articles/sdata2018172) then skip this section. Otherwise, you first need to download the SEM dataset and preprocess it as follows.
-
-3. Download the data files [here](https://b2share.eudat.eu/records/b9abc4a997f8452aa6de4f4b7335e582) and place the individual category folders into a single directory.
-
-4. Run `preprocess_sem_data.py`, passing as arguments the directory containing the SEM dataset category folders, and the destination you would like the preprocessed data to be saved to:
-
-```console
-python preprocess_sem_data.py --cat-dir=<cat_dir_path> --save-dst=<save_path>
-```
-
-5. Pre-train the model on the SEM dataset, passing as an argument the directory containing the preprocessed data:
-
-```console
-python bpartis/pretrain.py --data-dir=<> -->
-<!-- ``` -->
-
 #### Training BPartIS
 
 3. Download the EMPS dataset from [here](https://github.com/by256/emps).
@@ -48,14 +52,26 @@ python bpartis/pretrain.py --data-dir=<> -->
 4. Train the BPartIS model on the EMPS dataset.
 
 ```bash
-python bpartis/train.py --data-dir=data/ --device=cuda --epochs=300 --save-dir=bpartis/saved_models/
+python bpartis/train.py --data-dir=<path/to/emps/dir/> --device=cuda --epochs=300 --save-dir=bpartis/saved_models/
 ```
 
 ## Citing
 
 If you use **bpartis** in your work, please cite the following work:
 
-B. Yildirim, J. M. Cole, "Bayesian Particle Instance Segmentation for Electron Microscopy Image Quantification", *J. Chem. Inf. Model.* (**2021**) https://doi.org/10.1021/acs.jcim.xxxxxxx
+B. Yildirim, J. M. Cole, "Bayesian Particle Instance Segmentation for Electron Microscopy Image Quantification", *J. Chem. Inf. Model.* (**2021**) https://doi.org/10.1021/acs.jcim.0c01455
+
+```
+@article{bpartis,
+    author = {Yildirim, Batuhan and Cole, Jacqueline M.},
+    title = {Bayesian Particle Instance Segmentation for Electron Microscopy Image Quantification},
+    journal = {Journal of Chemical Information and Modeling},
+    year = {2021},
+    doi = {10.1021/acs.jcim.0c01455},
+    URL = {https://doi.org/10.1021/acs.jcim.0c01455},
+}
+```
+
 
 ## Funding
 
