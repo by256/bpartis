@@ -62,16 +62,19 @@ If you use **bpartis** in your work, please cite the following work:
 B. Yildirim, J. M. Cole, "Bayesian Particle Instance Segmentation for Electron Microscopy Image Quantification", *J. Chem. Inf. Model.* (**2021**) https://doi.org/10.1021/acs.jcim.0c01455
 
 ```
-@article{bpartis,
-    author = {Yildirim, Batuhan and Cole, Jacqueline M.},
-    title = {Bayesian Particle Instance Segmentation for Electron Microscopy Image Quantification},
-    journal = {Journal of Chemical Information and Modeling},
-    year = {2021},
-    doi = {10.1021/acs.jcim.0c01455},
-    URL = {https://doi.org/10.1021/acs.jcim.0c01455},
+@article{doi:10.1021/acs.jcim.0c01455,
+	author = {Yildirim, Batuhan and Cole, Jacqueline M.},
+	title = {Bayesian Particle Instance Segmentation for Electron Microscopy Image Quantification},
+	journal = {Journal of Chemical Information and Modeling},
+	volume = {61},
+	number = {3},
+	pages = {1136-1149},
+	year = {2021},
+	doi = {10.1021/acs.jcim.0c01455},
+	note ={PMID: 33682402},
+	URL = {https://doi.org/10.1021/acs.jcim.0c01455}
 }
 ```
-
 
 ## Funding
 
