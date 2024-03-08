@@ -138,4 +138,4 @@ class ReconstructionLoss(nn.Module):
         self.ms_ssim = MS_SSIM(data_range=1, size_average=True)
 
     def forward(self, x, x_prime):
-        return (1-self.alpha)*self.l1(x, x_prime) + self.alpha*self.ms_ssim(x, x_prime) 
+        return (1-self.alpha)*self.l1(x, x_prime) + self.alpha*(1-self.ms_ssim(x, x_prime))
