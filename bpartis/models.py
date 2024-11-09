@@ -191,10 +191,10 @@ class BranchedERFNet(nn.Module):
             print('initialize last layer with size: ',
                   output_conv.weight.size())
 
-            output_conv.weight[:, 0:2, :, :].fill_(0)
+            output_conv.weight[0:2, :, :, :].fill_(0)
             output_conv.bias[0:2].fill_(0)
 
-            output_conv.weight[:, 2:2+n_sigma, :, :].fill_(0)
+            output_conv.weight[2:2+n_sigma, :, :, :].fill_(0)
             output_conv.bias[2:2+n_sigma].fill_(1)
 
     def forward(self, input, only_encode=False):
